@@ -1,4 +1,4 @@
-const { fetchTopics, fetchUsers, fetchArticles, fetchArticleByID } = require('../models/get-models')
+const { fetchTopics, fetchUsers, fetchArticles, fetchArticleByID, addComment } = require('../models/get-models')
 
 exports.getTopics = (req, res, next) => {
     fetchTopics().then(topics => {
@@ -34,6 +34,15 @@ exports.getArticleByID = (req, res, next) => {
             return Promise.reject({ status: 404, msg: `Article ${id} not found`})
         }
         res.status(200).send({ article })
+    })
+    .catch(next)
+}
+
+exports.postComment = (req, res, next) => {
+    const id = req.params.article_id
+    const body = req.body
+    addComment(id, body).then(comment => {
+        console.log(comment)
     })
     .catch(next)
 }

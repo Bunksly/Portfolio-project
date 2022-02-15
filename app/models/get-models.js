@@ -56,11 +56,14 @@ exports.fetchArticles = (sort_by = 'created_at', order = 'desc', topic = undefin
 }
 
 exports.fetchArticleByID = (id) => {
-    console.log(id)
     return db.query(`
     SELECT author, title, topic, created_at, votes, article_id FROM articles
     WHERE article_id = $1;
     `, [id]).then(({ rows }) => {
         return rows[0]
     })
+}
+
+exports.addComment = (id, body) => {
+    console.log(id, body)
 }
