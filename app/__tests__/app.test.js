@@ -417,7 +417,7 @@ describe('app.js', () => {
                 })
             })
         })
-        describe.only('/api/comments/:comment_id', () => {
+        describe('/api/comments/:comment_id', () => {
             test('status 200: returns updated comment', () => {
                 const inc_votes = { inc_votes : 1 }
                 const expectOutput = {
@@ -550,6 +550,79 @@ describe('app.js', () => {
                 .expect(400)
                 .then(({ body }) => {
                     expect(body.msg).toBe('Input invalid, requires username and body')
+                })
+            })
+        })
+        describe.only('/api/articles', () => {
+            test('status 201: returns article', () => {
+                const input = {
+                    author: "rogersop",
+                    title: "test-title",
+                    body: "dont rest on your lorems",
+                    topic: "paper"
+                }
+                return request(app)
+                .post('/api/articles')
+                .send(input)
+                .expect(201)
+                .then(({ body : { article }}) => {
+                    expect(article).toEqual(
+                        expect.objectContaining({
+                            author: "rogersop",
+                            title: "test-title",
+                            body: "dont rest on your lorems",
+                            topic: "paper",
+                            article_id: 13,
+                            votes: 0,
+                            created_at: expect.any(String),
+                            comment_count: 0
+                        })
+                    )
+                })
+            })
+            test('status 404: when request author doesnt exist returns user not found', () => {
+                const input = {
+                    author: "invalid",
+                    title: "test-title",
+                    body: "dont rest on your lorems",
+                    topic: "paper"
+                }
+                return request(app)
+                .post('/api/articles')
+                .send(input)
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('User invalid not found')
+                })
+            })
+            test('status 404: when request topic doesnt exist returns topic not found', () => {
+                const input = {
+                    author: "rogersop",
+                    title: "test-title",
+                    body: "dont rest on your lorems",
+                    topic: "invalid"
+                }
+                return request(app)
+                .post('/api/articles')
+                .send(input)
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Topic invalid not found')
+                })
+            })
+            test('status 400: when request doesnt have author, title, topic and body returns err', () => {
+                const input = {
+                    username: "rogersop",
+                    heading: "test-title",
+                    text: "dont rest on your lorems",
+                    context: "invalid"
+                }
+                return request(app)
+                .post('/api/articles')
+                .send(input)
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Input invalid, requires author, body, title and topic')
                 })
             })
         })
